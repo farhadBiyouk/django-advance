@@ -59,8 +59,9 @@ class UserAdmin(BaseUserAdmin):
         ('groups', {'fields': ('groups', 'user_permissions')})
     )
     add_fieldsets = (
-        (None, {
+        (None, {    
             'classes': ('wide',),
+
             'fields': ('email', 'password1', 'password2'),
         }),
     )
