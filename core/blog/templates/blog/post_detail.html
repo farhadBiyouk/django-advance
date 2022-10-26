@@ -10,7 +10,7 @@
     <h1>{{single_post.title}}</h1>
     <img src="{{single_post.image.url}}" alt="" width='100' heigth='75'>
     <hr>
-    <small>{{single_post.author}} - {{single_post.published_date}}</small>
+    <small>{{single_post.author.first_name}} {{single_post.author.last_name}} - {{single_post.published_date}}</small>
     <p>{{single_post.content}} </p>
 </body>
 </html>
