@@ -1,4 +1,4 @@
-from django.urls import  path
+from django.urls import  path, include
 from blog import  views
 from django.views.generic import TemplateView
 
@@ -10,4 +10,8 @@ urlpatterns = [
     path('cbv-index/', views.IndexView.as_view(), name='cbv-index'),
     path('', views.PostList.as_view(), name='post-list'),
     path('<int:pk>/', views.PostDetail.as_view(), name='post-detail'),
+    path('post/create/', views.PostCreateView.as_view(), name='post-create'),
+    path('post/update/<int:pk>/', views.PostEditView.as_view(), name='post-edit'),
+    path('post/del/<int:pk>/', views.PostDeleteView.as_view(), name='post-delete'),
+    path('api/v1/', include('blog.api.v1.urls'))
 ]

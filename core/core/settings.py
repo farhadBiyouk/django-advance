@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     # my apps
     'accounts.apps.AccountsConfig',
     'blog.apps.BlogConfig',
+
+    # third party package
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

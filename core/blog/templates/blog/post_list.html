@@ -9,6 +9,12 @@
 <body>
     {% for item  in posts %}
     <a href="{% url 'blog:post-detail' item.id%}">{{item.title}}</a><br>
+    <a href="{% url 'blog:post-edit' item.id %}">
+        <h5>edit</h5>
+    </a>
+    <a href="{% url 'blog:post-delete' item.id %}">
+        <h5>delete</h5>
+    </a>
     {% endfor  %}
 </body>
 </html>
