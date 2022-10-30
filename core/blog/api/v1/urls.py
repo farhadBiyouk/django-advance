@@ -1,10 +1,10 @@
-from django.urls import  path
-from blog.api.v1 import  views
+from django.urls import path
+from blog.api.v1 import views
+from rest_framework.routers import DefaultRouter
 
+app_name = 'api-v1'
 
-
-app_name= 'blog'
-urlpatterns = [
-    path('post-list', views.api_get_list_view, name='api_get_list_view'),
-
-]
+router = DefaultRouter()
+router.register('posts', views.PostViewSet, basename='post')
+router.register('category', views.CategoryModelViewSet, basename='category')
+urlpatterns = router.urls
