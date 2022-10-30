@@ -10,7 +10,10 @@ from rest_framework.generics import (GenericAPIView, ListAPIView, ListCreateAPIV
                                      RetrieveAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView)
 from rest_framework import mixins
 from rest_framework import viewsets
-
+from blog.api.v1.permissions import IsOwnerObject
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+from rest_framework.pagination import LimitOffsetPagination
 
 data = {
     "id": 1,
@@ -137,9 +140,16 @@ class PostDetail(RetrieveDestroyAPIView):
 #         return Response(ser.data, status=status.HTTP_200_OK)
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsOwnerObject,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
+
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = {'author': ['exact'], 'category': [
+        'exact', 'in'], 'status': ['exact']}
+    search_fields = ['content', 'title']
+    ordering_fields = ['author', 'published_date', 'status']
 
     @action(methods=['get'], detail=False)
     def get_ok(self, request):
