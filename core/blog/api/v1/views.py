@@ -140,7 +140,7 @@ class PostDetail(RetrieveDestroyAPIView):
 #         return Response(ser.data, status=status.HTTP_200_OK)
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsOwnerObject,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 

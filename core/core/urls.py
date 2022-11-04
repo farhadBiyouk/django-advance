@@ -25,7 +25,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="Blog API",
         default_version='v1',
         description="Test description",
         terms_of_service="https://www.google.com/policies/terms/",
@@ -40,10 +40,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('blog/', include('blog.urls', namespace='blog')),
-    path('rest-auth/', include('rest_framework.urls')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    
     # path('api-docs/', include_docs_urls(title='api sample')),
-    # path(r'swagger(?P<format>\.json|\.yaml)$',
-    #         schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('blog.json',schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger',
             cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
