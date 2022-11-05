@@ -13,6 +13,11 @@ from rest_framework.generics import UpdateAPIView
 from django.contrib.auth import get_user_model
 from accounts.models import Profile
 from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from mail_templated import EmailMessage
+from ..utils import SendEmailThreading
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 User = get_user_model()
 
@@ -29,10 +34,19 @@ class RegistrationApiView(GenericAPIView):
             data = {
                 'email': ser.validated_data['email']
             }
+            user = get_object_or_404(User, email=ser.validated_data['email'])
+            token = self.get_tokens_for_user(user)
+            message = EmailMessage(
+                'email/activation.tpl', {'token': token}, 'adminn@admin.com', to=[ser.validated_data['email']])
+            SendEmailThreading(message).start()
             return Response(data, status=status.HTTP_201_CREATED)
 
-        else:
-            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+
+        return str(refresh.access_token)
 
 
 class ObtainAuthToken(ObtainAuthToken):
@@ -101,3 +115,34 @@ class ProfileApiView(RetrieveUpdateAPIView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, user=self.request.user)
         return obj
+
+
+class TestEmail(GenericAPIView):
+
+    def get(self, request, *args, **kwargs):
+        self.email = 'admin@admin.com'
+        user = get_object_or_404(User, email=self.email)
+        token = self.get_tokens_for_user(user)
+        message = EmailMessage(
+            'email/hello.tpl', {'token': token}, 'adminn@admin.com', to=[self.email])
+        SendEmailThreading(message).start()
+        return Response({"detail": "sent email"})
+
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+
+        return str(refresh.access_token)
+
+
+class ActivationApiView(APIView):
+
+    def get(self, request, token, *args, **kwargs):
+        print(token)
+        # decode > id user
+        # object user
+        # is_verified true
+        # if token not valid 
+
+
+        # else valid response true
+        return Response(token)

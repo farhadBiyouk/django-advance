@@ -50,12 +50,12 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ('email', "is_staff", )
-    list_filter = ('email', "is_staff")
+    list_display = ('email', "is_staff", 'is_verified')
+    list_filter = ('email', "is_staff", 'is_verified')
 
     fieldsets = (
         (None, {'fields':('email','password')}),
-        ('Permissions', {'fields':("is_active","is_staff",  "is_superuser",)}),
+        ('Permissions', {'fields':("is_active","is_staff",  "is_superuser",'is_verified')}),
         ('groups', {'fields': ('groups', 'user_permissions')})
     )
     add_fieldsets = (

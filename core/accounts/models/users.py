@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
         user.is_active =True
+        user.is_verified = True
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -38,6 +39,7 @@ class User(AbstractBaseUser ,PermissionsMixin):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     is_staff = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
 
     
 

@@ -25,14 +25,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': list(e.messages)})
         return super().validate(attrs)
 
-    
     def create(self, validated_data):
-        validated_data.pop('password1', None )
+        validated_data.pop('password1', None)
         return User.objects.create_user(**validated_data)
-
-
-
-
 
 
 class CustomTokenSerializer(serializers.Serializer):
@@ -65,6 +60,8 @@ class CustomTokenSerializer(serializers.Serializer):
             if not user:
                 msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg, code='authorization')
+            if not user.is_verified:
+                raise serializers.ValidationError('user does not verified')
         else:
             msg = _('Must include "username" and "password".')
             raise serializers.ValidationError(msg, code='authorization')
@@ -76,6 +73,8 @@ class CustomTokenSerializer(serializers.Serializer):
 class CustomTokePairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
+        if not self.user.is_verified:
+            raise serializers.ValidationError('user does not verified')
         data['email'] = self.user.email
         data['user_id'] = self.user.pk
         return data
@@ -87,11 +86,11 @@ class ChangePasswordSerializer(serializers.Serializer):
     password1 = serializers.CharField(required=True)
     password2 = serializers.CharField(required=True)
 
-
     def validate(self, attrs):
         if attrs.get('password1') != attrs.get('password2'):
-            raise serializers.ValidationError({"detail": 'password must be match'})
-        
+            raise serializers.ValidationError(
+                {"detail": 'password must be match'})
+
         try:
             validate_password(attrs.get('password1'))
         except exceptions.ValidationError as e:
@@ -105,5 +104,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id','email','first_name', 'last_name', 'image', 'description')
-        read_only_fields =  ('email', )
+        fields = ('id', 'email', 'first_name',
+                  'last_name', 'image', 'description')
+        read_only_fields = ('email', )
