@@ -2,7 +2,6 @@ from threading import Thread
 
 
 class SendEmailThreading(Thread):
-
     def __init__(self, email_obj):
 
         Thread.__init__(self)

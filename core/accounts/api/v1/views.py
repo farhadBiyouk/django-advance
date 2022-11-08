@@ -1,5 +1,13 @@
-from rest_framework.generics import GenericAPIView, RetrieveAPIView, RetrieveUpdateAPIView
-from .serializers import RegistrationSerializer, CustomTokenSerializer, ChangePasswordSerializer
+from rest_framework.generics import (
+    GenericAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateAPIView,
+)
+from .serializers import (
+    RegistrationSerializer,
+    CustomTokenSerializer,
+    ChangePasswordSerializer,
+)
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -31,13 +39,15 @@ class RegistrationApiView(GenericAPIView):
         ser = self.serializer_class(data=request.POST)
         if ser.is_valid():
             ser.save()
-            data = {
-                'email': ser.validated_data['email']
-            }
-            user = get_object_or_404(User, email=ser.validated_data['email'])
+            data = {"email": ser.validated_data["email"]}
+            user = get_object_or_404(User, email=ser.validated_data["email"])
             token = self.get_tokens_for_user(user)
             message = EmailMessage(
-                'email/activation.tpl', {'token': token}, 'adminn@admin.com', to=[ser.validated_data['email']])
+                "email/activation.tpl",
+                {"token": token},
+                "adminn@admin.com",
+                to=[ser.validated_data["email"]],
+            )
             SendEmailThreading(message).start()
             return Response(data, status=status.HTTP_201_CREATED)
 
@@ -54,18 +64,11 @@ class ObtainAuthToken(ObtainAuthToken):
     serializer_class = CustomTokenSerializer
 
     def post(self, request, *args, **kwargs):
-        ser = self.serializer_class(
-            data=request.data, context={'request': request})
+        ser = self.serializer_class(data=request.data, context={"request": request})
         ser.is_valid(raise_exception=True)
-        user = ser.validated_data['user']
+        user = ser.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
-        return Response(
-            {
-                'token': token.key,
-                'user_id': user.pk,
-                'email': user.email
-            }
-        )
+        return Response({"token": token.key, "user_id": user.pk, "email": user.email})
 
 
 class CustomDiscardAuthToken(APIView):
@@ -97,7 +100,10 @@ class ChangePasswordView(UpdateAPIView):
         if serializer.is_valid():
             # Check old password
             if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"old_password": ["Wrong password."]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             # set_password also hashes the password that the user will get
             self.object.set_password(serializer.data.get("password1"))
             self.object.save()
@@ -118,13 +124,13 @@ class ProfileApiView(RetrieveUpdateAPIView):
 
 
 class TestEmail(GenericAPIView):
-
     def get(self, request, *args, **kwargs):
-        self.email = 'admin@admin.com'
+        self.email = "admin@admin.com"
         user = get_object_or_404(User, email=self.email)
         token = self.get_tokens_for_user(user)
         message = EmailMessage(
-            'email/hello.tpl', {'token': token}, 'adminn@admin.com', to=[self.email])
+            "email/hello.tpl", {"token": token}, "adminn@admin.com", to=[self.email]
+        )
         SendEmailThreading(message).start()
         return Response({"detail": "sent email"})
 
@@ -135,14 +141,12 @@ class TestEmail(GenericAPIView):
 
 
 class ActivationApiView(APIView):
-
     def get(self, request, token, *args, **kwargs):
         print(token)
         # decode > id user
         # object user
         # is_verified true
-        # if token not valid 
-
+        # if token not valid
 
         # else valid response true
         return Response(token)

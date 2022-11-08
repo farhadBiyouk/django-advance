@@ -10,12 +10,15 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Password confirmation", widget=forms.PasswordInput
+    )
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ("email",)
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -39,36 +42,42 @@ class UserChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     disabled password hash display field.
     """
+
     password = ReadOnlyPasswordHashField()
 
     class Meta:
         model = User
-        fields = ('email', 'password',  'is_active', 'is_superuser', 'is_staff')
+        fields = ("email", "password", "is_active", "is_superuser", "is_staff")
 
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ('email', "is_staff", 'is_verified')
-    list_filter = ('email', "is_staff", 'is_verified')
+    list_display = ("email", "is_staff", "is_verified")
+    list_filter = ("email", "is_staff", "is_verified")
 
     fieldsets = (
-        (None, {'fields':('email','password')}),
-        ('Permissions', {'fields':("is_active","is_staff",  "is_superuser",'is_verified')}),
-        ('groups', {'fields': ('groups', 'user_permissions')})
+        (None, {"fields": ("email", "password")}),
+        (
+            "Permissions",
+            {"fields": ("is_active", "is_staff", "is_superuser", "is_verified")},
+        ),
+        ("groups", {"fields": ("groups", "user_permissions")}),
     )
     add_fieldsets = (
-        (None, {    
-            'classes': ('wide',),
-
-            'fields': ('email', 'password1', 'password2'),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "password1", "password2"),
+            },
+        ),
     )
-    search_fields = ['email', "is_staff"]
-    ordering = ('email',)
+    search_fields = ["email", "is_staff"]
+    ordering = ("email",)
     filter_horizontal = ()
-    
+
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)

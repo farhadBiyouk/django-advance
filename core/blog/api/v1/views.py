@@ -5,9 +5,15 @@ from blog.models import Post, Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import (GenericAPIView, ListAPIView, ListCreateAPIView,
-                                     RetrieveAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView)
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.generics import (
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateAPIView,
+    RetrieveDestroyAPIView,
+)
 from rest_framework import mixins
 from rest_framework import viewsets
 from blog.api.v1.permissions import IsOwnerObject
@@ -15,21 +21,22 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.pagination import LimitOffsetPagination
 
-data = {
-    "id": 1,
-    "title": "hello"
-}
+data = {"id": 1, "title": "hello"}
 
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated, ])
+@api_view(["GET", "POST"])
+@permission_classes(
+    [
+        IsAuthenticatedOrReadOnly,
+    ]
+)
 def api_get_list_view(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         posts = Post.objects.all()
         ser = PostSerializer(posts, many=True)
         return Response(ser.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         ser = PostSerializer(data=request.POST)
         ser.is_valid(raise_exception=True)
         ser.save()
@@ -39,17 +46,17 @@ def api_get_list_view(request):
 @api_view(["GET", "PUT", "DELETE"])
 def api_get_detail_view(request, id):
     post = get_object_or_404(Post, pk=id)
-    if request.method == 'GET':
+    if request.method == "GET":
         ser = PostSerializer(post)
         return Response(ser.data, status=status.HTTP_200_OK)
-    elif request.method == 'PUT':
+    elif request.method == "PUT":
         ser = PostSerializer(instance=post, data=request.data, partial=True)
         ser.is_valid(raise_exception=True)
         ser.save()
         return Response(ser.data, status=status.HTTP_200_OK)
-    elif request.method == 'DELETE':
+    elif request.method == "DELETE":
         post.delete()
-        return Response({'detail': 'this item successfully deleted'})
+        return Response({"detail": "this item successfully deleted"})
 
 
 # class PostList(APIView):
@@ -73,7 +80,7 @@ def api_get_detail_view(request, id):
 
 class PostList(ListCreateAPIView):
     queryset = Post.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = PostSerializer
     """ getting list of post and creating new post"""
 
@@ -118,11 +125,12 @@ class PostList(ListCreateAPIView):
 #     def delete(self, request, *args, **kwargs):
 #         return self.destroy(request, *args, **kwargs)
 
+
 class PostDetail(RetrieveDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 # class PostViewSet(viewsets.ViewSet):
@@ -139,24 +147,31 @@ class PostDetail(RetrieveDestroyAPIView):
 #         ser = self.serializer_class(data=object)
 #         return Response(ser.data, status=status.HTTP_200_OK)
 
+
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = {'author': ['exact'], 'category': [
-        'exact', 'in'], 'status': ['exact']}
-    search_fields = ['content', 'title']
-    ordering_fields = ['author', 'published_date', 'status']
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = {
+        "author": ["exact"],
+        "category": ["exact", "in"],
+        "status": ["exact"],
+    }
+    search_fields = ["content", "title"]
+    ordering_fields = ["author", "published_date", "status"]
 
-    @action(methods=['get'], detail=False)
+    @action(methods=["get"], detail=False)
     def get_ok(self, request):
-        return Response({'detail': 'create extra action for view_set'})
+        return Response({"detail": "create extra action for view_set"})
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()

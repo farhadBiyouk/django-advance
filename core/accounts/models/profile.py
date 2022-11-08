@@ -1,6 +1,10 @@
 from email.policy import default
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -11,7 +15,7 @@ class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=254)
     last_name = models.CharField(max_length=254)
-    image = models.ImageField(upload_to='user_profile/', blank=True, null=True)
+    image = models.ImageField(upload_to="user_profile/", blank=True, null=True)
     description = models.TextField()
 
     created_date = models.DateTimeField(auto_now_add=True)
@@ -23,5 +27,5 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
-    if kwargs['created']:
+    if kwargs["created"]:
         Profile.objects.create(user=instance)
