@@ -4,7 +4,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from accounts.models import User, Profile
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
 class UserCreationForm(forms.ModelForm):

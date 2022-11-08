@@ -6,3 +6,7 @@ exclude =
     .gitignore,
     settings,
     .git,
+
+ignore=
+    E501,
+    F401

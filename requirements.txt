@@ -59,4 +59,8 @@ tomli==2.0.1
 typing_extensions==4.4.0
 uritemplate==4.1.1
 urllib3==1.26.12
+<<<<<<< HEAD
 zipp==3.10.0
+=======
+zipp==3.10.0
+>>>>>>> 61914dc00f74688c787de37689a7f1af51279d32

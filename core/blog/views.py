@@ -51,7 +51,7 @@ class PostList(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return posts
 
 
-class PostDetail(LoginRequiredMixin,DetailView):
+class PostDetail(LoginRequiredMixin, DetailView):
 
     template_name = "blog/post_detail.html"
     context_object_name: str = "single_post"
